@@ -6,8 +6,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+
 let linksData = [];
 let buildingsData = [];
+let filenamesData = [];
 
 const loadBtn = document.getElementById('load-btn');
 const fileInput = document.getElementById('file-input');
@@ -39,6 +41,13 @@ function parseSheets(workbook) {
   // Sheet2: Buildings
   const buildingsSheet = workbook.Sheets['Buildings'];
   buildingsData = XLSX.utils.sheet_to_json(buildingsSheet, { header: ['Building'], range: 1 }).map(row => row.Building);
+  // Sheet3: Filename
+  const filenameSheet = workbook.Sheets['Filename'];
+  if (filenameSheet) {
+    filenamesData = XLSX.utils.sheet_to_json(filenameSheet, { header: ['Stage', 'Participant', 'Filename'], range: 1 });
+  } else {
+    filenamesData = [];
+  }
 }
 
 function populateDropdowns() {
@@ -63,36 +72,37 @@ function updateResults() {
   let filtered = linksData;
   const stage = stageSelect.value;
   const participant = participantSelect.value;
-  const building = buildingSelect.value;
   if (stage) filtered = filtered.filter(row => row.Stage === stage);
   if (participant) filtered = filtered.filter(row => row.Participant === participant);
-  if (building) {
-    // Only show links if the building is in the Buildings list
-    if (!buildingsData.includes(building)) {
-      filtered = [];
-    }
-  }
   results.innerHTML = '';
   if (filtered.length === 0) {
     results.innerHTML = '<li>No results found.</li>';
     return;
   }
+  // For each matching folder, find all matching files from Filename sheet
   filtered.forEach(row => {
-    const li = document.createElement('li');
-    li.textContent = `${row.Stage || ''} - ${row.Participant || ''} `;
-    const btn = document.createElement('button');
-    btn.textContent = 'Open Link';
-    btn.disabled = !building;
-    btn.onclick = () => {
-      if (building) {
-        // Ensure no double slashes
+    const files = filenamesData.filter(f =>
+      f.Stage === row.Stage && f.Participant === row.Participant
+    );
+    if (files.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = `${row.Stage || ''} - ${row.Participant || ''}: No files found.`;
+      results.appendChild(li);
+      return;
+    }
+    files.forEach(file => {
+      const li = document.createElement('li');
+      li.textContent = `${row.Stage || ''} - ${row.Participant || ''}: ${file.Filename}`;
+      const btn = document.createElement('button');
+      btn.textContent = 'Open File';
+      btn.onclick = () => {
         let base = row.Link;
         if (base.endsWith('/')) base = base.slice(0, -1);
-        const url = `${base}/${building}`;
+        const url = `${base}/${file.Filename}`;
         window.open(url, '_blank');
-      }
-    };
-    li.appendChild(btn);
-    results.appendChild(li);
+      };
+      li.appendChild(btn);
+      results.appendChild(li);
+    });
   });
 }
