@@ -1,5 +1,5 @@
 // Register service worker
-console.log('Stage Viewer v2.4 loaded');
+console.log('Stage Viewer v2.5 loaded');
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and script running');
 });
