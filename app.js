@@ -1,5 +1,8 @@
 // Register service worker
 console.log('Stage Viewer v2.4 loaded');
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM fully loaded and script running');
+});
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
