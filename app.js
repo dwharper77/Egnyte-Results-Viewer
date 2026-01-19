@@ -20,18 +20,8 @@ const stageSelect = document.getElementById('stage-select');
 const participantSelect = document.getElementById('participant-select');
 const buildingSelect = document.getElementById('building-select');
 const results = document.getElementById('results');
-const egnyteRootInput = document.getElementById('egnyte-root');
-const setRootBtn = document.getElementById('set-root-btn');
 
-// Load Egnyte root from localStorage if available
-let egnyteRoot = localStorage.getItem('egnyteRoot') || '';
-if (egnyteRoot) egnyteRootInput.value = egnyteRoot;
-
-setRootBtn.addEventListener('click', () => {
-  egnyteRoot = egnyteRootInput.value.trim();
-  localStorage.setItem('egnyteRoot', egnyteRoot);
-  updateResults();
-});
+// Removed Egnyte Desktop root logic for simplified version
 
 loadBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', handleFile, false);
