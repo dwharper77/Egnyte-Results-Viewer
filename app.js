@@ -1,5 +1,5 @@
 // Register service worker
-console.log('Stage Viewer v2.3 loaded');
+console.log('Stage Viewer v2.4 loaded');
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
@@ -9,7 +9,6 @@ if ('serviceWorker' in navigator) {
 
 let linksData = [];
 let buildingsData = [];
-let filenamesData = [];
 
 
 const loadBtn = document.getElementById('load-btn');
@@ -54,13 +53,6 @@ function parseSheets(workbook) {
   // Sheet2: Buildings
   const buildingsSheet = workbook.Sheets['Buildings'];
   buildingsData = XLSX.utils.sheet_to_json(buildingsSheet, { header: ['Building'], range: 1 }).map(row => row.Building);
-  // Sheet3: Filename
-  const filenameSheet = workbook.Sheets['Filename'];
-  if (filenameSheet) {
-    filenamesData = XLSX.utils.sheet_to_json(filenameSheet, { header: ['Stage', 'Participant', 'Filename'], range: 1 });
-  } else {
-    filenamesData = [];
-  }
 }
 
 function populateDropdowns() {
@@ -92,47 +84,17 @@ function updateResults() {
     results.innerHTML = '<li>No results found.</li>';
     return;
   }
-  // For each matching folder, find all matching files from Filename sheet
   filtered.forEach(row => {
-    const files = filenamesData.filter(f =>
-      f.Stage === row.Stage && f.Participant === row.Participant
-    );
-    if (files.length === 0) {
-      const li = document.createElement('li');
-      li.textContent = `${row.Stage || ''} - ${row.Participant || ''}: No files found.`;
-      results.appendChild(li);
-      return;
-    }
-    files.forEach(file => {
-      const li = document.createElement('li');
-      li.textContent = `${row.Stage || ''} - ${row.Participant || ''}: ${file.Filename}`;
-
-      // Egnyte Desktop local path
-      let localPath = '';
-      if (egnyteRoot) {
-        // Remove leading/trailing slashes from root
-        let root = egnyteRoot.replace(/[\\/]+$/, '');
-        localPath = `${root}\\${file.Filename}`;
-      }
-
-      // Show local path and Copy button
-      if (localPath) {
-        const pathSpan = document.createElement('span');
-        pathSpan.textContent = ` [${localPath}] `;
-        pathSpan.style.fontSize = '0.95em';
-        pathSpan.style.color = '#1976d2';
-        li.appendChild(pathSpan);
-
-        const copyBtn = document.createElement('button');
-        copyBtn.textContent = 'Copy Path';
-        copyBtn.style.marginLeft = '0.5em';
-        copyBtn.onclick = () => {
-          navigator.clipboard.writeText(localPath);
-        };
-        li.appendChild(copyBtn);
-      }
-
-      results.appendChild(li);
-    });
+    const li = document.createElement('li');
+    li.textContent = `${row.Stage || ''} - ${row.Participant || ''}`;
+    const btn = document.createElement('button');
+    btn.textContent = 'Open Folder';
+    btn.onclick = () => {
+      let base = row.Link;
+      if (base.endsWith('/')) base = base.slice(0, -1);
+      window.open(base, '_blank');
+    };
+    li.appendChild(btn);
+    results.appendChild(li);
   });
 }
