@@ -1,0 +1,16 @@
+{
+  "name": "Stage Participant Index",
+  "short_name": "Stage Index",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f9fb",
+  "theme_color": "#1976d2",
+  "description": "PWA for browsing Stage Participant Index Excel file.",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoftexcel.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

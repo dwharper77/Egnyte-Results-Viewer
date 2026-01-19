@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage Participant Index</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#1976d2">
+</head>
+<body>
+  <header>
+    <h1>Stage Participant Index</h1>
+  </header>
+  <main>
+    <button id="load-btn">Load Index File</button>
+    <input type="file" id="file-input" accept=".xlsx" style="display:none">
+    <div class="dropdowns">
+      <select id="stage-select" disabled>
+        <option value="">Select Stage</option>
+      </select>
+      <select id="participant-select" disabled>
+        <option value="">Select Participant</option>
+      </select>
+      <select id="building-select" disabled>
+        <option value="">Select Building</option>
+      </select>
+    </div>
+    <ul id="results"></ul>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
