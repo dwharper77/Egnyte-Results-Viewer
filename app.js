@@ -76,7 +76,6 @@ function updateResults() {
     results.innerHTML = '<li>No results found.</li>';
     return;
   }
-  const building = buildingSelect.value;
   filtered.forEach(row => {
     const li = document.createElement('li');
     li.textContent = `${row.Stage || ''} - ${row.Participant || ''} `;
