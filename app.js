@@ -1,5 +1,5 @@
 // Register service worker
-console.log('Stage Viewer v2.1 loaded');
+console.log('Stage Viewer v2.3 loaded');
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
@@ -11,12 +11,25 @@ let linksData = [];
 let buildingsData = [];
 let filenamesData = [];
 
+
 const loadBtn = document.getElementById('load-btn');
 const fileInput = document.getElementById('file-input');
 const stageSelect = document.getElementById('stage-select');
 const participantSelect = document.getElementById('participant-select');
 const buildingSelect = document.getElementById('building-select');
 const results = document.getElementById('results');
+const egnyteRootInput = document.getElementById('egnyte-root');
+const setRootBtn = document.getElementById('set-root-btn');
+
+// Load Egnyte root from localStorage if available
+let egnyteRoot = localStorage.getItem('egnyteRoot') || '';
+if (egnyteRoot) egnyteRootInput.value = egnyteRoot;
+
+setRootBtn.addEventListener('click', () => {
+  egnyteRoot = egnyteRootInput.value.trim();
+  localStorage.setItem('egnyteRoot', egnyteRoot);
+  updateResults();
+});
 
 loadBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', handleFile, false);
@@ -93,16 +106,32 @@ function updateResults() {
     files.forEach(file => {
       const li = document.createElement('li');
       li.textContent = `${row.Stage || ''} - ${row.Participant || ''}: ${file.Filename}`;
-      const btn = document.createElement('button');
-      btn.textContent = 'Open File';
-      btn.onclick = () => {
-        let base = row.Link;
-        if (base.endsWith('/')) base = base.slice(0, -1);
-        // Encode only the filename part for safe URLs
-        const url = `${base}/${encodeURIComponent(file.Filename)}`;
-        window.open(url, '_blank');
-      };
-      li.appendChild(btn);
+
+      // Egnyte Desktop local path
+      let localPath = '';
+      if (egnyteRoot) {
+        // Remove leading/trailing slashes from root
+        let root = egnyteRoot.replace(/[\\/]+$/, '');
+        localPath = `${root}\\${file.Filename}`;
+      }
+
+      // Show local path and Copy button
+      if (localPath) {
+        const pathSpan = document.createElement('span');
+        pathSpan.textContent = ` [${localPath}] `;
+        pathSpan.style.fontSize = '0.95em';
+        pathSpan.style.color = '#1976d2';
+        li.appendChild(pathSpan);
+
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy Path';
+        copyBtn.style.marginLeft = '0.5em';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(localPath);
+        };
+        li.appendChild(copyBtn);
+      }
+
       results.appendChild(li);
     });
   });
