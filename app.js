@@ -98,7 +98,8 @@ function updateResults() {
       btn.onclick = () => {
         let base = row.Link;
         if (base.endsWith('/')) base = base.slice(0, -1);
-        const url = `${base}/${file.Filename}`;
+        // Encode only the filename part for safe URLs
+        const url = `${base}/${encodeURIComponent(file.Filename)}`;
         window.open(url, '_blank');
       };
       li.appendChild(btn);
