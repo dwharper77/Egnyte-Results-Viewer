@@ -1,4 +1,5 @@
 // Register service worker
+console.log('DEV v1 loaded');
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
